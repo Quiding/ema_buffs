@@ -197,7 +197,9 @@ function EMA_Buffs:PushSettingsToTeam() self:EMASendSettings() end
 
 function EMA_Buffs:EMAOnSettingsReceived(characterName, settings)
     if characterName ~= self.characterName then
-        EMAUtilities:CopyTable(self.db, settings)
+        for k, v in pairs(settings) do
+            self.db[k] = v
+        end
         self:SettingsRefresh()
         ns.UI:RefreshBars()
     end
