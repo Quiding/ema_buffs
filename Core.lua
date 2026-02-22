@@ -203,6 +203,10 @@ function EMA_Buffs:EMAOnSettingsReceived(characterName, settings)
     end
 end
 
+function EMA_Buffs:EMAOnCommandReceived(sender, commandName, ...)
+    -- Handle commands if needed
+end
+
 function EMA_Buffs:OnEMAProfileChanged()
     if self.completeDatabase then self.db = self.completeDatabase.profile end
     self:SettingsRefresh()
