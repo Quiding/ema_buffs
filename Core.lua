@@ -202,6 +202,7 @@ function EMA_Buffs:EMAOnSettingsReceived(characterName, settings)
         end
         self:SettingsRefresh()
         ns.UI:RefreshBars()
+        ns.UI:UpdatePositionFromDB()
     end
 end
 
