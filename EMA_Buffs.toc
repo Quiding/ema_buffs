@@ -1,0 +1,10 @@
+## Interface: 11502
+## Title: EMA Buffs
+## Notes: EMA Persistent Buff Tracking
+## Author: Gemini
+## Version: 1.0.0
+## Dependencies: EMA
+## SavedVariables: EMA_BuffsProfileDB
+
+Core.lua
+UI.lua
