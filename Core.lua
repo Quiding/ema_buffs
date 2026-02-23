@@ -257,7 +257,6 @@ function EMA_Buffs:SettingsCreate()
     self.settingsControl.checkBoxIntegrate = EMAHelperSettings:CreateCheckBox(self.settingsControl, headingWidth, left, movingTop, "Integrate into Cooldowns bar", function(w, e, v) self.db.integrateWithCooldowns = v; ns.UI:RefreshBars(); self:SettingsRefresh() end)
     movingTop = movingTop - checkBoxHeight
     self.settingsControl.dropdownIntegratePos = EMAHelperSettings:CreateDropdown(self.settingsControl, 450, left + 20, movingTop, "Integration Position")
-    self.settingsControl.dropdownOrder:SetList({ ["NameAsc"] = "Name (Asc)", ["NameDesc"] = "Name (Desc)", ["EMAPosition"] = "EMA Team Order", ["RoleAsc"] = "Role (Tank > Healer > DPS)" })
     self.settingsControl.dropdownIntegratePos:SetList({ ["Left"] = "Left of Cooldowns", ["Right"] = "Right of Cooldowns" })
     self.settingsControl.dropdownIntegratePos:SetCallback("OnValueChanged", function(w, e, v) self.db.integratePosition = v; ns.UI:RefreshBars(); self:SettingsRefresh() end)
     movingTop = movingTop - dropdownHeight - verticalSpacing
