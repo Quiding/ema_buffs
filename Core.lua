@@ -229,6 +229,8 @@ function EMA_Buffs:SettingsCreate()
     local dropdownHeight, verticalSpacing = EMAHelperSettings:GetDropdownHeight(), EMAHelperSettings:GetVerticalSpacing()
     local movingTop = top
     
+    local halfWidth = headingWidth / 2
+    
     EMAHelperSettings:CreateHeading(self.settingsControl, "General Options", movingTop, false)
     movingTop = movingTop - headingHeight
     self.settingsControl.checkBoxShowBars = EMAHelperSettings:CreateCheckBox(self.settingsControl, headingWidth, left, movingTop, "Show Buff Bars", function(w, e, v) self.db.showBars = v; ns.UI:RefreshBars(); self:SettingsRefresh() end)
@@ -237,15 +239,15 @@ function EMA_Buffs:SettingsCreate()
     movingTop = movingTop - checkBoxHeight
     self.settingsControl.checkBoxShowNames = EMAHelperSettings:CreateCheckBox(self.settingsControl, headingWidth, left, movingTop, "Show Character Names", function(w, e, v) self.db.showNames = v; ns.UI:RefreshBars(); self:SettingsRefresh() end)
     movingTop = movingTop - checkBoxHeight
-    self.settingsControl.dropdownOrder = EMAHelperSettings:CreateDropdown(self.settingsControl, headingWidth, left, movingTop, "Bar Order")
+    self.settingsControl.dropdownOrder = EMAHelperSettings:CreateDropdown(self.settingsControl, halfWidth, left, movingTop, "Bar Order")
     self.settingsControl.dropdownOrder:SetList({ ["NameAsc"] = "Name (Asc)", ["NameDesc"] = "Name (Desc)", ["EMAPosition"] = "EMA Team Order", ["RoleAsc"] = "Role (Tank > Healer > DPS)" })
     self.settingsControl.dropdownOrder:SetCallback("OnValueChanged", function(w, e, v) self.db.barOrder = v; ns.UI:RefreshBars(); self:SettingsRefresh() end)
     movingTop = movingTop - dropdownHeight - verticalSpacing
-    self.settingsControl.sliderScale = EMAHelperSettings:CreateSlider(self.settingsControl, headingWidth, left, movingTop, "Overall Scale")
+    self.settingsControl.sliderScale = EMAHelperSettings:CreateSlider(self.settingsControl, halfWidth, left, movingTop, "Overall Scale")
     self.settingsControl.sliderScale:SetSliderValues(0.5, 2.0, 0.01)
     self.settingsControl.sliderScale:SetCallback("OnValueChanged", function(w, e, v) self.db.barScale = tonumber(v); ns.UI:RefreshBars(); self:SettingsRefresh() end)
     movingTop = movingTop - sliderHeight
-    self.settingsControl.sliderAlpha = EMAHelperSettings:CreateSlider(self.settingsControl, headingWidth, left, movingTop, "Overall Alpha")
+    self.settingsControl.sliderAlpha = EMAHelperSettings:CreateSlider(self.settingsControl, halfWidth, left, movingTop, "Overall Alpha")
     self.settingsControl.sliderAlpha:SetSliderValues(0.1, 1.0, 0.01)
     self.settingsControl.sliderAlpha:SetCallback("OnValueChanged", function(w, e, v) self.db.barAlpha = tonumber(v); ns.UI:RefreshBars(); self:SettingsRefresh() end)
     movingTop = movingTop - sliderHeight
@@ -254,7 +256,7 @@ function EMA_Buffs:SettingsCreate()
     movingTop = movingTop - headingHeight
     self.settingsControl.checkBoxIntegrate = EMAHelperSettings:CreateCheckBox(self.settingsControl, headingWidth, left, movingTop, "Integrate into Cooldowns bar", function(w, e, v) self.db.integrateWithCooldowns = v; ns.UI:RefreshBars(); self:SettingsRefresh() end)
     movingTop = movingTop - checkBoxHeight
-    self.settingsControl.dropdownIntegratePos = EMAHelperSettings:CreateDropdown(self.settingsControl, headingWidth, left, movingTop, "Integration Position")
+    self.settingsControl.dropdownIntegratePos = EMAHelperSettings:CreateDropdown(self.settingsControl, halfWidth, left, movingTop, "Integration Position")
     self.settingsControl.dropdownIntegratePos:SetList({ ["Left"] = "Left of Cooldowns", ["Right"] = "Right of Cooldowns" })
     self.settingsControl.dropdownIntegratePos:SetCallback("OnValueChanged", function(w, e, v) self.db.integratePosition = v; ns.UI:RefreshBars(); self:SettingsRefresh() end)
     movingTop = movingTop - dropdownHeight - verticalSpacing
@@ -265,73 +267,73 @@ function EMA_Buffs:SettingsCreate()
     movingTop = movingTop - checkBoxHeight
     self.settingsControl.checkBoxGlowAnimated = EMAHelperSettings:CreateCheckBox(self.settingsControl, headingWidth, left, movingTop, "Glow Animation", function(w, e, v) self.db.glowAnimated = v; ns.UI:RefreshBars(); self:SettingsRefresh() end)
     movingTop = movingTop - checkBoxHeight
-    self.settingsControl.colorGlow = EMAHelperSettings:CreateColourPicker(self.settingsControl, headingWidth, left, movingTop, "Glow Color")
+    self.settingsControl.colorGlow = EMAHelperSettings:CreateColourPicker(self.settingsControl, halfWidth, left, movingTop, "Glow Color")
     self.settingsControl.colorGlow:SetCallback("OnValueChanged", function(w, e, r, g, b, a) self.db.glowColorR, self.db.glowColorG, self.db.glowColorB, self.db.glowColorA = r, g, b, a; ns.UI:RefreshBars(); self:SettingsRefresh() end)
     movingTop = movingTop - 30
-    self.settingsControl.sliderRunningAlpha = EMAHelperSettings:CreateSlider(self.settingsControl, headingWidth, left, movingTop, "Timer Running Opacity")
+    self.settingsControl.sliderRunningAlpha = EMAHelperSettings:CreateSlider(self.settingsControl, halfWidth, left, movingTop, "Timer Running Opacity")
     self.settingsControl.sliderRunningAlpha:SetSliderValues(0.1, 1.0, 0.01)
     self.settingsControl.sliderRunningAlpha:SetCallback("OnValueChanged", function(w, e, v) self.db.runningAlpha = tonumber(v); ns.UI:RefreshBars(); self:SettingsRefresh() end)
     movingTop = movingTop - sliderHeight
-    self.settingsControl.sliderMissingAlpha = EMAHelperSettings:CreateSlider(self.settingsControl, headingWidth, left, movingTop, "Buff Missing Opacity")
+    self.settingsControl.sliderMissingAlpha = EMAHelperSettings:CreateSlider(self.settingsControl, halfWidth, left, movingTop, "Buff Missing Opacity")
     self.settingsControl.sliderMissingAlpha:SetSliderValues(0.1, 1.0, 0.01)
     self.settingsControl.sliderMissingAlpha:SetCallback("OnValueChanged", function(w, e, v) self.db.missingAlpha = tonumber(v); ns.UI:RefreshBars(); self:SettingsRefresh() end)
     movingTop = movingTop - sliderHeight
 
     EMAHelperSettings:CreateHeading(self.settingsControl, "Appearance: Whole UI Frame", movingTop, false)
     movingTop = movingTop - headingHeight
-    self.settingsControl.dropdownFrameBorder = EMAHelperSettings:CreateMediaBorder(self.settingsControl, headingWidth, left, movingTop, "UI Border Style")
+    self.settingsControl.dropdownFrameBorder = EMAHelperSettings:CreateMediaBorder(self.settingsControl, halfWidth, left, movingTop, "UI Border Style")
     self.settingsControl.dropdownFrameBorder:SetCallback("OnValueChanged", function(w, e, v) self.db.frameBorderStyle = v; ns.UI:RefreshBars(); self:SettingsRefresh() end)
     movingTop = movingTop - 110
-    self.settingsControl.dropdownFrameBackground = EMAHelperSettings:CreateMediaBackground(self.settingsControl, headingWidth, left, movingTop, "UI Background Style")
+    self.settingsControl.dropdownFrameBackground = EMAHelperSettings:CreateMediaBackground(self.settingsControl, halfWidth, left, movingTop, "UI Background Style")
     self.settingsControl.dropdownFrameBackground:SetCallback("OnValueChanged", function(w, e, v) self.db.frameBackgroundStyle = v; ns.UI:RefreshBars(); self:SettingsRefresh() end)
     movingTop = movingTop - 110
-    self.settingsControl.colorFrameBackground = EMAHelperSettings:CreateColourPicker(self.settingsControl, headingWidth, left, movingTop, "UI Background Color")
+    self.settingsControl.colorFrameBackground = EMAHelperSettings:CreateColourPicker(self.settingsControl, halfWidth, left, movingTop, "UI Background Color")
     self.settingsControl.colorFrameBackground:SetCallback("OnValueChanged", function(w, e, r, g, b, a) self.db.frameBackgroundColourR, self.db.frameBackgroundColourG, self.db.frameBackgroundColourB, self.db.frameBackgroundColourA = r, g, b, a; ns.UI:RefreshBars(); self:SettingsRefresh() end)
     movingTop = movingTop - 30
-    self.settingsControl.colorFrameBorder = EMAHelperSettings:CreateColourPicker(self.settingsControl, headingWidth, left, movingTop, "UI Border Color")
+    self.settingsControl.colorFrameBorder = EMAHelperSettings:CreateColourPicker(self.settingsControl, halfWidth, left, movingTop, "UI Border Color")
     self.settingsControl.colorFrameBorder:SetCallback("OnValueChanged", function(w, e, r, g, b, a) self.db.frameBorderColourR, self.db.frameBorderColourG, self.db.frameBorderColourB, self.db.frameBorderColourA = r, g, b, a; ns.UI:RefreshBars(); self:SettingsRefresh() end)
     movingTop = movingTop - 30
 
     EMAHelperSettings:CreateHeading(self.settingsControl, "Appearance: Individual Bars", movingTop, false)
     movingTop = movingTop - headingHeight
-    self.settingsControl.dropdownBarBorder = EMAHelperSettings:CreateMediaBorder(self.settingsControl, headingWidth, left, movingTop, "Bar Border Style")
+    self.settingsControl.dropdownBarBorder = EMAHelperSettings:CreateMediaBorder(self.settingsControl, halfWidth, left, movingTop, "Bar Border Style")
     self.settingsControl.dropdownBarBorder:SetCallback("OnValueChanged", function(w, e, v) self.db.barBorderStyle = v; ns.UI:RefreshBars(); self:SettingsRefresh() end)
     movingTop = movingTop - 110
-    self.settingsControl.dropdownBarBackground = EMAHelperSettings:CreateMediaBackground(self.settingsControl, headingWidth, left, movingTop, "Bar Background Style")
+    self.settingsControl.dropdownBarBackground = EMAHelperSettings:CreateMediaBackground(self.settingsControl, halfWidth, left, movingTop, "Bar Background Style")
     self.settingsControl.dropdownBarBackground:SetCallback("OnValueChanged", function(w, e, v) self.db.barBackgroundStyle = v; ns.UI:RefreshBars(); self:SettingsRefresh() end)
     movingTop = movingTop - 110
-    self.settingsControl.colorBarBackground = EMAHelperSettings:CreateColourPicker(self.settingsControl, headingWidth, left, movingTop, "Bar Background Color")
+    self.settingsControl.colorBarBackground = EMAHelperSettings:CreateColourPicker(self.settingsControl, halfWidth, left, movingTop, "Bar Background Color")
     self.settingsControl.colorBarBackground:SetCallback("OnValueChanged", function(w, e, r, g, b, a) self.db.barBackgroundColourR, self.db.barBackgroundColourG, self.db.barBackgroundColourB, self.db.barBackgroundColourA = r, g, b, a; ns.UI:RefreshBars(); self:SettingsRefresh() end)
     movingTop = movingTop - 30
-    self.settingsControl.colorBarBorder = EMAHelperSettings:CreateColourPicker(self.settingsControl, headingWidth, left, movingTop, "Bar Border Color")
+    self.settingsControl.colorBarBorder = EMAHelperSettings:CreateColourPicker(self.settingsControl, halfWidth, left, movingTop, "Bar Border Color")
     self.settingsControl.colorBarBorder:SetCallback("OnValueChanged", function(w, e, r, g, b, a) self.db.barBorderColourR, self.db.barBorderColourG, self.db.barBorderColourB, self.db.barBorderColourA = r, g, b, a; ns.UI:RefreshBars(); self:SettingsRefresh() end)
     movingTop = movingTop - 30
 
     EMAHelperSettings:CreateHeading(self.settingsControl, "Sizing & Spacing", movingTop, false)
     movingTop = movingTop - headingHeight
-    self.settingsControl.sliderIconSize = EMAHelperSettings:CreateSlider(self.settingsControl, headingWidth, left, movingTop, "Icon Size")
+    self.settingsControl.sliderIconSize = EMAHelperSettings:CreateSlider(self.settingsControl, halfWidth, left, movingTop, "Icon Size")
     self.settingsControl.sliderIconSize:SetSliderValues(16, 64, 1)
     self.settingsControl.sliderIconSize:SetCallback("OnValueChanged", function(w, e, v) self.db.iconSize = tonumber(v); ns.UI:RefreshBars(); self:SettingsRefresh() end)
     movingTop = movingTop - sliderHeight
-    self.settingsControl.sliderIconMargin = EMAHelperSettings:CreateSlider(self.settingsControl, headingWidth, left, movingTop, "Icon Spacing")
+    self.settingsControl.sliderIconMargin = EMAHelperSettings:CreateSlider(self.settingsControl, halfWidth, left, movingTop, "Icon Spacing")
     self.settingsControl.sliderIconMargin:SetSliderValues(0, 20, 1)
     self.settingsControl.sliderIconMargin:SetCallback("OnValueChanged", function(w, e, v) self.db.iconMargin = tonumber(v); ns.UI:RefreshBars(); self:SettingsRefresh() end)
     movingTop = movingTop - sliderHeight
-    self.settingsControl.sliderBarMargin = EMAHelperSettings:CreateSlider(self.settingsControl, headingWidth, left, movingTop, "Bar Spacing")
+    self.settingsControl.sliderBarMargin = EMAHelperSettings:CreateSlider(self.settingsControl, halfWidth, left, movingTop, "Bar Spacing")
     self.settingsControl.sliderBarMargin:SetSliderValues(0, 50, 1)
     self.settingsControl.sliderBarMargin:SetCallback("OnValueChanged", function(w, e, v) self.db.barMargin = tonumber(v); ns.UI:RefreshBars(); self:SettingsRefresh() end)
     movingTop = movingTop - sliderHeight
 
     EMAHelperSettings:CreateHeading(self.settingsControl, "Text & Stacks", movingTop, false)
     movingTop = movingTop - headingHeight
-    self.settingsControl.dropdownFont = EMAHelperSettings:CreateMediaFont(self.settingsControl, headingWidth, left, movingTop, "Font Style")
+    self.settingsControl.dropdownFont = EMAHelperSettings:CreateMediaFont(self.settingsControl, halfWidth, left, movingTop, "Font Style")
     self.settingsControl.dropdownFont:SetCallback("OnValueChanged", function(w, e, v) self.db.fontStyle = v; ns.UI:RefreshBars(); self:SettingsRefresh() end)
     movingTop = movingTop - 110
-    self.settingsControl.sliderStackFontSize = EMAHelperSettings:CreateSlider(self.settingsControl, headingWidth, left, movingTop, "Stack Font Size")
+    self.settingsControl.sliderStackFontSize = EMAHelperSettings:CreateSlider(self.settingsControl, halfWidth, left, movingTop, "Stack Font Size")
     self.settingsControl.sliderStackFontSize:SetSliderValues(6, 32, 1)
     self.settingsControl.sliderStackFontSize:SetCallback("OnValueChanged", function(w, e, v) self.db.stackFontSize = tonumber(v); ns.UI:RefreshBars(); self:SettingsRefresh() end)
     movingTop = movingTop - sliderHeight
-    self.settingsControl.colorStack = EMAHelperSettings:CreateColourPicker(self.settingsControl, headingWidth, left, movingTop, "Stack Color")
+    self.settingsControl.colorStack = EMAHelperSettings:CreateColourPicker(self.settingsControl, halfWidth, left, movingTop, "Stack Color")
     self.settingsControl.colorStack:SetCallback("OnValueChanged", function(w, e, r, g, b, a) self.db.stackColorR, self.db.stackColorG, self.db.stackColorB = r, g, b; ns.UI:RefreshBars(); self:SettingsRefresh() end)
     movingTop = movingTop - 30
 
