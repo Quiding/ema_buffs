@@ -237,14 +237,10 @@ function EMA_Buffs:SettingsCreate()
     movingTop = movingTop - checkBoxHeight
     self.settingsControl.checkBoxShowNames = EMAHelperSettings:CreateCheckBox(self.settingsControl, headingWidth, left, movingTop, "Show Character Names", function(w, e, v) self.db.showNames = v; ns.UI:RefreshBars(); self:SettingsRefresh() end)
     movingTop = movingTop - checkBoxHeight
-    
-    self.settingsControl.checkBoxIntegrate = EMAHelperSettings:CreateCheckBox(self.settingsControl, headingWidth, left, movingTop, "Integrate into Cooldowns bar", function(w, e, v) self.db.integrateWithCooldowns = v; ns.UI:RefreshBars(); self:SettingsRefresh() end)
-    movingTop = movingTop - checkBoxHeight
-    self.settingsControl.dropdownIntegratePos = EMAHelperSettings:CreateDropdown(self.settingsControl, headingWidth, left, movingTop, "Integration Position")
-    self.settingsControl.dropdownIntegratePos:SetList({ ["Left"] = "Left of Cooldowns", ["Right"] = "Right of Cooldowns" })
-    self.settingsControl.dropdownIntegratePos:SetCallback("OnValueChanged", function(w, e, v) self.db.integratePosition = v; ns.UI:RefreshBars(); self:SettingsRefresh() end)
+    self.settingsControl.dropdownOrder = EMAHelperSettings:CreateDropdown(self.settingsControl, headingWidth, left, movingTop, "Bar Order")
+    self.settingsControl.dropdownOrder:SetList({ ["NameAsc"] = "Name (Asc)", ["NameDesc"] = "Name (Desc)", ["EMAPosition"] = "EMA Team Order", ["RoleAsc"] = "Role (Tank > Healer > DPS)" })
+    self.settingsControl.dropdownOrder:SetCallback("OnValueChanged", function(w, e, v) self.db.barOrder = v; ns.UI:RefreshBars(); self:SettingsRefresh() end)
     movingTop = movingTop - dropdownHeight - verticalSpacing
-
     self.settingsControl.sliderScale = EMAHelperSettings:CreateSlider(self.settingsControl, headingWidth, left, movingTop, "Overall Scale")
     self.settingsControl.sliderScale:SetSliderValues(0.5, 2.0, 0.01)
     self.settingsControl.sliderScale:SetCallback("OnValueChanged", function(w, e, v) self.db.barScale = tonumber(v); ns.UI:RefreshBars(); self:SettingsRefresh() end)
@@ -253,12 +249,17 @@ function EMA_Buffs:SettingsCreate()
     self.settingsControl.sliderAlpha:SetSliderValues(0.1, 1.0, 0.01)
     self.settingsControl.sliderAlpha:SetCallback("OnValueChanged", function(w, e, v) self.db.barAlpha = tonumber(v); ns.UI:RefreshBars(); self:SettingsRefresh() end)
     movingTop = movingTop - sliderHeight
-    self.settingsControl.dropdownOrder = EMAHelperSettings:CreateDropdown(self.settingsControl, headingWidth, left, movingTop, "Bar Order")
-    self.settingsControl.dropdownOrder:SetList({ ["NameAsc"] = "Name (Asc)", ["NameDesc"] = "Name (Desc)", ["EMAPosition"] = "EMA Team Order", ["RoleAsc"] = "Role (Tank > Healer > DPS)" })
-    self.settingsControl.dropdownOrder:SetCallback("OnValueChanged", function(w, e, v) self.db.barOrder = v; ns.UI:RefreshBars(); self:SettingsRefresh() end)
+
+    EMAHelperSettings:CreateHeading(self.settingsControl, "Cooldowns Integration", movingTop, false)
+    movingTop = movingTop - headingHeight
+    self.settingsControl.checkBoxIntegrate = EMAHelperSettings:CreateCheckBox(self.settingsControl, headingWidth, left, movingTop, "Integrate into Cooldowns bar", function(w, e, v) self.db.integrateWithCooldowns = v; ns.UI:RefreshBars(); self:SettingsRefresh() end)
+    movingTop = movingTop - checkBoxHeight
+    self.settingsControl.dropdownIntegratePos = EMAHelperSettings:CreateDropdown(self.settingsControl, headingWidth, left, movingTop, "Integration Position")
+    self.settingsControl.dropdownIntegratePos:SetList({ ["Left"] = "Left of Cooldowns", ["Right"] = "Right of Cooldowns" })
+    self.settingsControl.dropdownIntegratePos:SetCallback("OnValueChanged", function(w, e, v) self.db.integratePosition = v; ns.UI:RefreshBars(); self:SettingsRefresh() end)
     movingTop = movingTop - dropdownHeight - verticalSpacing
 
-    EMAHelperSettings:CreateHeading(self.settingsControl, "Missing Buff Highlights", movingTop, false)
+    EMAHelperSettings:CreateHeading(self.settingsControl, "Visual Effects", movingTop, false)
     movingTop = movingTop - headingHeight
     self.settingsControl.checkBoxGlow = EMAHelperSettings:CreateCheckBox(self.settingsControl, headingWidth, left, movingTop, "Glow if missing", function(w, e, v) self.db.glowIfMissing = v; ns.UI:RefreshBars(); self:SettingsRefresh() end)
     movingTop = movingTop - checkBoxHeight
@@ -267,9 +268,6 @@ function EMA_Buffs:SettingsCreate()
     self.settingsControl.colorGlow = EMAHelperSettings:CreateColourPicker(self.settingsControl, headingWidth, left, movingTop, "Glow Color")
     self.settingsControl.colorGlow:SetCallback("OnValueChanged", function(w, e, r, g, b, a) self.db.glowColorR, self.db.glowColorG, self.db.glowColorB, self.db.glowColorA = r, g, b, a; ns.UI:RefreshBars(); self:SettingsRefresh() end)
     movingTop = movingTop - 30
-
-    EMAHelperSettings:CreateHeading(self.settingsControl, "Opacity Settings", movingTop, false)
-    movingTop = movingTop - headingHeight
     self.settingsControl.sliderRunningAlpha = EMAHelperSettings:CreateSlider(self.settingsControl, headingWidth, left, movingTop, "Timer Running Opacity")
     self.settingsControl.sliderRunningAlpha:SetSliderValues(0.1, 1.0, 0.01)
     self.settingsControl.sliderRunningAlpha:SetCallback("OnValueChanged", function(w, e, v) self.db.runningAlpha = tonumber(v); ns.UI:RefreshBars(); self:SettingsRefresh() end)
