@@ -2,6 +2,7 @@ local addonName, ns = ...
 -- Official EMA Module initialization
 local EMA_Buffs = LibStub("AceAddon-3.0"):NewAddon("EMA_Buffs", "Module-1.0", "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0")
 ns.EMA_Buffs = EMA_Buffs
+EMA_Buffs.ns = ns
 
 EMA_Buffs.moduleName = "EMA_Buffs"
 EMA_Buffs.settingsDatabaseName = "EMA_BuffsProfileDB"
@@ -45,6 +46,7 @@ EMA_Buffs.settings = {
         lockBars = false,
         barOrder = "RoleAsc",
         showNames = true,
+        barLayout = "Horizontal",
         -- Integration
         integrateWithCooldowns = false,
         integratePosition = "Right",
@@ -249,7 +251,30 @@ end
 function EMA_Buffs:ChatCommand(input)
     local cmd = input and input:trim():lower() or ""
     if cmd == "config" then self:EMAChatCommand("config")
-    else self:Print("Usage: /ebf config") end
+    elseif cmd == "test" then self:TestBuffs()
+    else self:Print("Usage: /ebf config, /ebf test") end
+end
+
+function EMA_Buffs:TestBuffs()
+    for index, characterName in EMAApi.TeamListOrdered() do
+        local isOnline = EMAApi.GetCharacterOnlineStatus(characterName)
+        if (isOnline == true or characterName == self.characterName) and self.db.enabledMembers[characterName] ~= false then
+            local class, _ = EMAApi.GetClass(characterName)
+            if class then
+                local classKey = class:upper()
+                local tracked = self.db.trackedBuffs[classKey]
+                if tracked then
+                    local charKey = Ambiguate(characterName, "none"):lower()
+                    self.activeBuffs[charKey] = self.activeBuffs[charKey] or {}
+                    for _, buffInfo in ipairs(tracked) do
+                        self.activeBuffs[charKey][buffInfo.name] = { count = 1, duration = 10, expirationTime = GetTime() + 10, icon = buffInfo.icon }
+                    end
+                end
+            end
+        end
+    end
+    self:Print("Started 10s Test on all tracked buffs.")
+    if ns.UI then ns.UI:RefreshBars() end
 end
 
 function EMA_Buffs:OnEnable()
@@ -350,7 +375,11 @@ function EMA_Buffs:SettingsCreate()
     self.settingsControl = {}
     self.settingsControlClass = {}
     local EMAHelperSettings = LibStub("EMAHelperSettings-1.0")
-    EMAHelperSettings:CreateSettings(self.settingsControlClass, "Buffs & Cooldowns", "Buffs & Cooldowns", function() end, "Interface\\AddOns\\EMA\\Media\\TeamCore.tga", 6)
+    EMAHelperSettings:CreateSettings(self.settingsControlClass, "Buffs & Cooldowns", "Buffs & Cooldowns", function() 
+        self:PushSettingsToTeam()
+        local EMA_Cooldowns = LibStub("AceAddon-3.0"):GetAddon("EMA_Cooldowns", true)
+        if EMA_Cooldowns then EMA_Cooldowns:PushSettingsToTeam() end
+    end, "Interface\\AddOns\\EMA\\Media\\TeamCore.tga", 6)
     EMAHelperSettings:CreateSettings(self.settingsControl, "Buffs", "Buffs & Cooldowns", function() self:PushSettingsToTeam() end, "Interface\\AddOns\\EMA\\Media\\SettingsIcon.tga", 10)
     
     local top, left = EMAHelperSettings:TopOfSettings(), EMAHelperSettings:LeftOfSettings()
@@ -365,12 +394,16 @@ function EMA_Buffs:SettingsCreate()
     movingTop = movingTop - headingHeight
     self.settingsControl.checkBoxShowBars = EMAHelperSettings:CreateCheckBox(self.settingsControl, headingWidth, left, movingTop, "Show Buff Bars", function(w, e, v) self.db.showBars = v; ns.UI:RefreshBars(); self:SettingsRefresh() end)
     movingTop = movingTop - checkBoxHeight
-    self.settingsControl.checkBoxLockBars = EMAHelperSettings:CreateCheckBox(self.settingsControl, headingWidth, left, movingTop, "Lock Bars", function(w, e, v) self.db.lockBars = v; self:SettingsRefresh() end)
+    self.settingsControl.checkBoxLockBars = EMAHelperSettings:CreateCheckBox(self.settingsControl, headingWidth, left, movingTop, "Lock Bars", function(w, e, v) self.db.lockBars = v; ns.UI:RefreshBars(); self:SettingsRefresh() end)
     movingTop = movingTop - checkBoxHeight
     self.settingsControl.checkBoxShowNames = EMAHelperSettings:CreateCheckBox(self.settingsControl, headingWidth, left, movingTop, "Show Character Names", function(w, e, v) self.db.showNames = v; ns.UI:RefreshBars(); self:SettingsRefresh() end)
     movingTop = movingTop - checkBoxHeight
     self.settingsControl.checkBoxBreakUpBars = EMAHelperSettings:CreateCheckBox(self.settingsControl, headingWidth, left, movingTop, "Ungrouped Bars (Independent Movement)", function(w, e, v) self.db.breakUpBars = v; ns.UI:RefreshBars(); self:SettingsRefresh() end)
     movingTop = movingTop - checkBoxHeight
+    self.settingsControl.dropdownLayout = EMAHelperSettings:CreateDropdown(self.settingsControl, 440, left, movingTop, "Bar Orientation")
+    self.settingsControl.dropdownLayout:SetList({ ["Horizontal"] = "Horizontal (Icons in a row)", ["Vertical"] = "Vertical (Icons in a column)" })
+    self.settingsControl.dropdownLayout:SetCallback("OnValueChanged", function(w, e, v) self.db.barLayout = v; ns.UI:RefreshBars(); self:SettingsRefresh() end)
+    movingTop = movingTop - dropdownHeight - verticalSpacing
     self.settingsControl.buttonResetPositions = EMAHelperSettings:CreateButton(self.settingsControl, headingWidth, left, movingTop, "Reset All Independent Bar Positions", function() 
         self.db.individualBarPositions = {}
         if ns.UI and ns.UI.teamBars then
@@ -513,12 +546,51 @@ function EMA_Buffs:SettingsCreate()
     movingTop = movingTop - self.settingsControl.spellList.listHeight - verticalSpacing
     
     local halfEditWidth = (headingWidth - 10) / 2
-    self.settingsControl.editBoxAddSpell = EMAHelperSettings:CreateEditBox(self.settingsControl, halfEditWidth, left, movingTop, "Buff Name or ID")
+    self.settingsControl.editBoxAddSpell = EMAHelperSettings:CreateEditBox(self.settingsControl, halfEditWidth, left, movingTop, "Buff Name or ID (Drag items here)")
+    
+    -- Add Drag and Drop support
+    local eb = self.settingsControl.editBoxAddSpell.editbox
+    eb:SetScript("OnReceiveDrag", function(obj)
+        local type, id, info = GetCursorInfo()
+        if type == "spell" then
+            local name = GetSpellInfo(id, info)
+            if name then obj:SetText(name) end
+            ClearCursor()
+        elseif type == "item" then
+            local name = GetItemInfo(id)
+            if name then obj:SetText(name) else obj:SetText(tostring(id)) end
+            ClearCursor()
+        end
+    end)
+    eb:HookScript("OnMouseUp", function(obj)
+        local type, id, info = GetCursorInfo()
+        if type == "spell" or type == "item" then
+            eb:GetScript("OnReceiveDrag")(obj)
+        end
+    end)
+
     self.settingsControl.buttonAddSpell = EMAHelperSettings:CreateButton(self.settingsControl, 60, left + headingWidth - 60, movingTop, "Add", function() self:AddSpellToTrackedList() end)
     movingTop = movingTop - EMAHelperSettings:GetEditBoxHeight()
 
     self:EMAModuleInitialize(self.settingsControl.widgetSettings.frame)
     self.settingsControl.widgetSettings.content:SetHeight(-movingTop + 20)
+end
+
+function EMA_Buffs:AddSpellToTrackedList()
+    local classRaw = self.selectedClass
+    if not classRaw then self:Print("Please select a class first."); return end
+    local class = classRaw:upper()
+    local rawSpell = self.settingsControl.editBoxAddSpell:GetText()
+    local spellVal = strtrim(rawSpell or "")
+    if not spellVal or spellVal == "" then self:Print("Invalid Name or ID."); return end
+    local name, icon, spellID = self:GetSpellInfoRobust(spellVal)
+    if not name then self:Print("Could not find buff information for: " .. spellVal); return end
+    
+    table.insert(self.db.trackedBuffs[class], { name = name, id = tonumber(spellID) or 0, icon = icon or 134400 })
+    self:Print(string.format("Added Buff: %s", name))
+    
+    self.settingsControl.editBoxAddSpell:SetText("")
+    self:SettingsSpellListScrollRefresh(); self:PushSettingsToTeam(); self:SettingsRefresh()
 end
 
 function EMA_Buffs:SettingsRefresh()
@@ -535,6 +607,9 @@ function EMA_Buffs:SettingsRefresh()
         
         self.settingsControl.checkBoxBreakUpBars:SetValue(db.breakUpBars)
         self.settingsControl.checkBoxBreakUpBars:SetDisabled(integrated)
+        
+        self.settingsControl.dropdownLayout:SetValue(db.barLayout or "Horizontal")
+        self.settingsControl.dropdownLayout:SetDisabled(integrated)
         
         self.settingsControl.checkBoxIntegrate:SetValue(integrated)
         self.settingsControl.dropdownIntegratePos:SetValue(db.integratePosition or "Right")
