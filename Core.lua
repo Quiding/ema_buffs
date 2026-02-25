@@ -373,7 +373,10 @@ end
 
 function EMA_Buffs:SettingsCreate()
     self.settingsControl = {}
+    self.settingsControlClass = {}
     local EMAHelperSettings = LibStub("EMAHelperSettings-1.0")
+    -- Create the parent category once here to ensure it has the icon
+    EMAHelperSettings:CreateSettings(self.settingsControlClass, "Buffs & Cooldowns", "Buffs & Cooldowns", function() self:PushSettingsToTeam() end, "Interface\\AddOns\\EMA\\Media\\TeamCore.tga", 6)
     
     EMAHelperSettings:CreateSettings(self.settingsControl, "Buffs", "Buffs & Cooldowns", function() self:PushSettingsToTeam() end, "Interface\\AddOns\\EMA\\Media\\SettingsIcon.tga", 10)
     
@@ -760,7 +763,7 @@ function EMA_Buffs:ImportExportSettingsCreate()
     self.settingsControlImportExport = {}
     local EMAHelperSettings = LibStub("EMAHelperSettings-1.0")
     
-    EMAHelperSettings:CreateSettings(self.settingsControlImportExport, "Import / Export", "Buffs", function() self:PushSettingsToTeam() end, "Interface\\AddOns\\EMA\\Media\\SettingsIcon.tga", 13)
+    EMAHelperSettings:CreateSettings(self.settingsControlImportExport, "Buffs: Import / Export", "Buffs & Cooldowns", function() self:PushSettingsToTeam() end, "Interface\\AddOns\\EMA\\Media\\SettingsIcon.tga", 10.1)
     
     local top, left = EMAHelperSettings:TopOfSettings(), EMAHelperSettings:LeftOfSettings()
     local headingHeight, headingWidth = EMAHelperSettings:HeadingHeight(), EMAHelperSettings:HeadingWidth(true)
