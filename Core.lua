@@ -573,6 +573,7 @@ function EMA_Buffs:SettingsCreate()
     movingTop = movingTop - EMAHelperSettings:GetEditBoxHeight()
 
     self:EMAModuleInitialize(self.settingsControl.widgetSettings.frame)
+    self:ImportExportSettingsCreate()
     self.settingsControl.widgetSettings.content:SetHeight(-movingTop + 20)
 end
 
@@ -754,4 +755,97 @@ function EMA_Buffs:SettingsSpellListRowClick(rowNumber, columnNumber)
         else if dataIndex < #spells then table.insert(spells, dataIndex + 1, table.remove(spells, dataIndex)) end end
     elseif columnNumber == 5 then table.remove(spells, dataIndex) end
     self:SettingsSpellListScrollRefresh(); self:PushSettingsToTeam(); self:SettingsRefresh()
+end
+
+-- -----------------------------------------------------------------------
+-- IMPORT / EXPORT
+-- -----------------------------------------------------------------------
+
+function EMA_Buffs:ImportExportSettingsCreate()
+    self.settingsControlImportExport = {}
+    local EMAHelperSettings = LibStub("EMAHelperSettings-1.0")
+    
+    EMAHelperSettings:CreateSettings(self.settingsControlImportExport, "Import / Export", "Buffs", function() self:PushSettingsToTeam() end, "Interface\\AddOns\\EMA\\Media\\SettingsIcon.tga", 13)
+    
+    local top, left = EMAHelperSettings:TopOfSettings(), EMAHelperSettings:LeftOfSettings()
+    local headingHeight, headingWidth = EMAHelperSettings:HeadingHeight(), EMAHelperSettings:HeadingWidth(true)
+    local movingTop = top
+    
+    EMAHelperSettings:CreateHeading(self.settingsControlImportExport, "Data Import / Export", movingTop, false)
+    movingTop = movingTop - headingHeight - 10
+
+    self.settingsControlImportExport.labelInfo = EMAHelperSettings:CreateLabel(self.settingsControlImportExport, headingWidth, left, movingTop, "Use the boxes below to export or import configuration strings.")
+    movingTop = movingTop - 30
+
+    -- 1. Buff List
+    EMAHelperSettings:CreateHeading(self.settingsControlImportExport, "1. Tracked Buffs List", movingTop, false)
+    movingTop = movingTop - headingHeight - 5
+    
+    self.settingsControlImportExport.editBoxBuffs = EMAHelperSettings:CreateMultiEditBox(self.settingsControlImportExport, headingWidth, left, movingTop, "Buff List Data (Class-specific tracked buffs)", 6)
+    movingTop = movingTop - 120
+    
+    self.settingsControlImportExport.buttonExportBuffs = EMAHelperSettings:CreateButton(self.settingsControlImportExport, headingWidth/2 - 5, left, movingTop, "Export Buff List", function()
+        local LibAceSerializer = LibStub:GetLibrary("AceSerializer-3.0")
+        local str = LibAceSerializer:Serialize(self.db.trackedBuffs)
+        self.settingsControlImportExport.editBoxBuffs.editBox:SetText(str)
+        self.settingsControlImportExport.editBoxBuffs.editBox:HighlightText()
+        self.settingsControlImportExport.editBoxBuffs.editBox:SetFocus()
+    end)
+    
+    self.settingsControlImportExport.buttonImportBuffs = EMAHelperSettings:CreateButton(self.settingsControlImportExport, headingWidth/2 - 5, left + headingWidth/2 + 5, movingTop, "Import Buff List", function()
+        local str = self.settingsControlImportExport.editBoxBuffs.editBox:GetText()
+        if str and str ~= "" then
+            local LibAceSerializer = LibStub:GetLibrary("AceSerializer-3.0")
+            local success, data = LibAceSerializer:Deserialize(str)
+            if success and type(data) == "table" then
+                self.db.trackedBuffs = data
+                self:Print("Buff list imported successfully!")
+                self:SettingsRefresh()
+            else
+                self:Print("Error: Invalid buff list import string.")
+            end
+        end
+    end)
+    movingTop = movingTop - 40
+
+    -- 2. Settings + Positions
+    EMAHelperSettings:CreateHeading(self.settingsControlImportExport, "2. Settings & Positions", movingTop, false)
+    movingTop = movingTop - headingHeight - 5
+    
+    self.settingsControlImportExport.editBoxSettings = EMAHelperSettings:CreateMultiEditBox(self.settingsControlImportExport, headingWidth, left, movingTop, "General Settings Data (Layout, Scale, Positions, etc.)", 6)
+    movingTop = movingTop - 120
+    
+    self.settingsControlImportExport.buttonExportSettings = EMAHelperSettings:CreateButton(self.settingsControlImportExport, headingWidth/2 - 5, left, movingTop, "Export Settings", function()
+        local LibAceSerializer = LibStub:GetLibrary("AceSerializer-3.0")
+        local EMAUtilities = LibStub:GetLibrary("EbonyUtilities-1.0")
+        local settings = EMAUtilities:CopyTable(self.db)
+        settings.trackedBuffs = nil -- Exclude buffs
+        local str = LibAceSerializer:Serialize(settings)
+        self.settingsControlImportExport.editBoxSettings.editBox:SetText(str)
+        self.settingsControlImportExport.editBoxSettings.editBox:HighlightText()
+        self.settingsControlImportExport.editBoxSettings.editBox:SetFocus()
+    end)
+    
+    self.settingsControlImportExport.buttonImportSettings = EMAHelperSettings:CreateButton(self.settingsControlImportExport, headingWidth/2 - 5, left + headingWidth/2 + 5, movingTop, "Import Settings", function()
+        local str = self.settingsControlImportExport.editBoxSettings.editBox:GetText()
+        if str and str ~= "" then
+            local LibAceSerializer = LibStub:GetLibrary("AceSerializer-3.0")
+            local success, data = LibAceSerializer:Deserialize(str)
+            if success and type(data) == "table" then
+                local trackedBuffs = self.db.trackedBuffs -- Keep current buffs
+                for k, v in pairs(data) do
+                    self.db[k] = v
+                end
+                self.db.trackedBuffs = trackedBuffs -- Restore buffs
+                self:Print("Settings and positions imported successfully!")
+                ns.UI:RefreshBars()
+                self:SettingsRefresh()
+            else
+                self:Print("Error: Invalid settings import string.")
+            end
+        end
+    end)
+    movingTop = movingTop - 40
+
+    self.settingsControlImportExport.widgetSettings.content:SetHeight(-movingTop + 20)
 end
