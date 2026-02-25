@@ -121,13 +121,13 @@ local function CreateBuffBar(characterName, parent)
             if activeData then
                 b.glow:Hide(); if LBG then LBG.HideOverlayGlow(b) end
                 if activeData.duration > 0 and activeData.expirationTime > 0 then
-                    b.icon:SetAlpha(runningAlpha or 0.3); b.cooldown:SetCooldown(activeData.expirationTime - activeData.duration, activeData.duration); b.cooldown:Show()
-                else b.icon:SetAlpha(1.0); b.cooldown:Hide() end
+                    b:SetAlpha(runningAlpha or 0.3); b.icon:SetAlpha(1.0); b.cooldown:SetCooldown(activeData.expirationTime - activeData.duration, activeData.duration); b.cooldown:Show()
+                else b:SetAlpha(1.0); b.icon:SetAlpha(1.0); b.cooldown:Hide() end
                 if activeData.count and activeData.count > 1 then
                     b.stackText:SetFont(SharedMedia:Fetch("font", db.fontStyle), db.stackFontSize, "OUTLINE"); b.stackText:SetTextColor(db.stackColorR or 1, db.stackColorG or 1, db.stackColorB or 0); b.stackText:SetText(activeData.count); b.stackText:Show()
                 else b.stackText:Hide() end
             else
-                b.icon:SetAlpha(missingAlpha or 0.2); b.cooldown:Hide(); b.stackText:Hide()
+                b:SetAlpha(missingAlpha or 0.2); b.icon:SetAlpha(1.0); b.cooldown:Hide(); b.stackText:Hide()
                 if db.glowIfMissing then
                     if db.glowAnimated and LBG then b.glow:Hide(); LBG.ShowOverlayGlow(b, { color = { db.glowColorR or 1, db.glowColorG or 0, db.glowColorB or 0, db.glowColorA or 1 } })
                     else if LBG then LBG.HideOverlayGlow(b) end; b.glow:SetVertexColor(db.glowColorR or 1, db.glowColorG or 0, db.glowColorB or 0, db.glowColorA or 1); b.glow:Show() end
