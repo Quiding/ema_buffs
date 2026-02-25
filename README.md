@@ -6,7 +6,7 @@ Looking for other team-wide tracking? Check out [EMA Cooldowns](https://github.c
 
 **Note:** This addon likely requires your team to be in the same guild and utilize **guild communications** for settings synchronization.
 
-Is this AI slop? probably, but it seems to work
+**Disclaimer:** These addons are early-stage Gemini-generated prototypes and have not undergone extensive bug testing. Please use with caution and report any issues you find.
 
 ## Key Features
 
