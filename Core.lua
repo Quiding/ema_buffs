@@ -218,7 +218,8 @@ function EMA_Buffs:OnInitialize()
     PatchSharedMediaWidgets()
     self.completeDatabase = LibStub("AceDB-3.0"):New(self.settingsDatabaseName, self.settings)
     self.db = self.completeDatabase.profile
-    self.characterName = UnitName("player")
+    local realm = GetRealmName():gsub("%s+", "")
+    self.characterName = UnitName("player").."-"..realm
     self:SettingsCreate()
     self:RegisterChatCommand("ebf", "ChatCommand")
     self:RegisterChatCommand("ema-buffs", "ChatCommand")
@@ -348,12 +349,18 @@ function EMA_Buffs:ScanUnit(unit)
     if ns.UI then ns.UI:UpdateUI() end
 end
 
-function EMA_Buffs:PushSettingsToTeam() self:EMASendSettings() end
+function EMA_Buffs:PushSettingsToTeam() self:EMASendSettings(); self:EMASendCommandToTeam("EMABPushAll") end
 
 function EMA_Buffs:EMAOnSettingsReceived(characterName, settings)
     if characterName ~= self.characterName then
         for k, v in pairs(settings) do
-            self.db[k] = v
+            if k ~= "enabledMembers" and k ~= "individualBarPositions" and k ~= "teamBarsPos" then
+                if type(v) == "table" then
+                    self.db[k] = EMAUtilities:CopyTable(v)
+                else
+                    self.db[k] = v
+                end
+            end
         end
         self:SettingsRefresh()
         ns.UI:RefreshBars()
@@ -362,7 +369,9 @@ function EMA_Buffs:EMAOnSettingsReceived(characterName, settings)
 end
 
 function EMA_Buffs:EMAOnCommandReceived(sender, commandName, ...)
-    -- Handle commands if needed
+    if commandName == "EMABPushAll" then
+        ns.UI:RefreshBars()
+    end
 end
 
 function EMA_Buffs:OnEMAProfileChanged()
@@ -733,7 +742,7 @@ function EMA_Buffs:SettingsSpellListScrollRefresh()
             row.columns[2].textString:SetText("")
             row.columns[3].textString:SetText(spell.name)
             row.columns[4].textString:SetText("")
-            row.columns[5].textString:SetText("Remove")
+            row.columns[5].textString:SetText("|cffff0000Remove|r")
             row.dataIndex = dataIndex
             row:Show()
         else row:Hide() end
@@ -818,6 +827,9 @@ function EMA_Buffs:ImportExportSettingsCreate()
         local EMAUtilities = LibStub:GetLibrary("EbonyUtilities-1.0")
         local settings = EMAUtilities:CopyTable(self.db)
         settings.trackedBuffs = nil -- Exclude buffs
+        settings.enabledMembers = nil -- Exclude character specific
+        settings.individualBarPositions = nil -- Exclude character specific
+        settings.teamBarsPos = nil -- Exclude character specific
         local str = LibAceSerializer:Serialize(settings)
         self.settingsControlImportExport.editBoxSettings.editBox:SetText(str)
         self.settingsControlImportExport.editBoxSettings.editBox:HighlightText()
@@ -831,10 +843,16 @@ function EMA_Buffs:ImportExportSettingsCreate()
             local success, data = LibAceSerializer:Deserialize(str)
             if success and type(data) == "table" then
                 local trackedBuffs = self.db.trackedBuffs -- Keep current buffs
+                local enabledMembers = self.db.enabledMembers
+                local individualBarPositions = self.db.individualBarPositions
+                local teamBarsPos = self.db.teamBarsPos
                 for k, v in pairs(data) do
                     self.db[k] = v
                 end
                 self.db.trackedBuffs = trackedBuffs -- Restore buffs
+                self.db.enabledMembers = enabledMembers
+                self.db.individualBarPositions = individualBarPositions
+                self.db.teamBarsPos = teamBarsPos
                 self:Print("Settings and positions imported successfully!")
                 ns.UI:RefreshBars()
                 self:SettingsRefresh()

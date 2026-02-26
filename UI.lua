@@ -51,7 +51,6 @@ local function CreateBuffBar(characterName, parent)
     f:SetFrameLevel(parent:GetFrameLevel() + 1)
 
     f.nameLabel = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    f.nameLabel:SetText(Ambiguate(characterName, "short"))
 
     f.icons = {}
 
@@ -136,6 +135,7 @@ local function CreateBuffBar(characterName, parent)
             b:Show()
         end
 
+        self.nameLabel:SetText(Ambiguate(self.characterName, "short"))
         ApplyFontStyle(self.nameLabel)
         local nameWidth = (not integrated and showNames) and (self.nameLabel:GetStringWidth() + 4) or 0
         local iconsBoundingSize = (activeCount > 0) and ((size * activeCount) + (margin * math.max(0, activeCount - 1))) or 0
