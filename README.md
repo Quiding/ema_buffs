@@ -31,3 +31,9 @@ Looking for other team-wide tracking? Check out [EMA Cooldowns](https://github.c
 *   Use **Select Class to Manage** to customize the specific buffs you want to track.
 *   Adjust the **Glow if missing** and **Glow Animation** settings to your preference for visual alerts.
 *   Use the command `/ebf config` to open the settings directly.
+
+
+## Export example
+*  Tracked Buffs List ( Just Water Shield for Shamans )
+  ```^1^T^SHUNTER^T^t^SWARRIOR^T^t^SPALADIN^T^t^SMAGE^T^t^SPRIEST^T^t^SWARLOCK^T^t^SROGUE^T^t^SDRUID^T^t^SDEATHKNIGHT^T^t^SSHAMAN^T^N1^T^Sid^N23575^Sname^SWater~`Shield^Sicon^N132315^t^t^t^^```
+*  Settings & Positions  ```^1^T^SlockBars^b^SglowColorB^F8548009268740096^f-53^SbarMargin^N4^SglowColorG^F8406719877087232^f-53^SstackColorG^N1^SframeBackgroundColourG^N0.1^SmissingAlpha^N1^SframeBorderColourR^N0.5^SintegrateWithCooldowns^B^Sglobal^T^t^SintegratePosition^SRight^SrunningAlpha^N0.3^SbarScale^N1.2^SframeBorderColourG^N0.5^SframeBorderStyle^SBlizzard~`Tooltip^SbarAlpha^N1^SiconSize^N38^SbarBorderStyle^SBlizzard~`Tooltip^SfontSize^N12^SglowIfMissing^B^SbarBorderColourA^N1^SfontStyle^SArial~`Narrow^SbarBackgroundColourG^N0.1^SbarBorderColourG^N0.5^SbarBorderColourB^N0.5^SglowColorA^N1^SshowBars^B^SbarOrder^SRoleAsc^SglowAnimated^B^SbarBackgroundColourR^N0.1^SstackColorR^N1^SbarBackgroundColourA^N0.7^SframeBorderColourA^N1^SglowColorR^N1^SbarBorderColourR^N0.5^SbarBackgroundColourB^N0.1^SframeBackgroundColourB^N0.1^SframeBackgroundStyle^SBlizzard~`Dialog~`Background^SshowNames^B^SframeBackgroundColourA^N0.7^SframeBorderColourB^N0.5^SbarLayout^SHorizontal^SiconMargin^N15^SframeBackgroundColourR^N0.1^SstackColorB^N0^SbarBackgroundStyle^SBlizzard~`Dialog~`Background^SstackFontSize^N12^SbreakUpBars^b^t^^```
