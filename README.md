@@ -4,6 +4,8 @@ A Gemini-generated plugin for **EMA (Ebony's MultiBoxing Assistant)** [https://w
 
 Looking for other team-wide tracking? Check out [EMA Cooldowns](https://github.com/Quiding/ema_cooldowns) or Shaman-specific [EMA Totems](https://github.com/Quiding/ema_totems).
 
+There is a small showcase of this + the other plugins mentioned here: https://www.youtube.com/watch?v=1vsrVzWFRxQ
+
 **Note:** This addon likely requires your team to be in the same guild and utilize **guild communications** for settings synchronization.
 
 **Disclaimer:** These addons are early-stage Gemini-generated prototypes and have not undergone extensive bug testing. Please use with caution and report any issues you find.
